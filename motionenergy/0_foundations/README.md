@@ -135,7 +135,7 @@ By the end of this module, you will be able to:
 
 Each section contains:
 1. An **overview notebook** with explanations, visualizations, and code examples
-2. An **exercises folder** with hands-on tasks to reinforce your understanding
+2. An **exercises notebook** with hands-on tasks to reinforce your understanding
 
 We recommend:
 - Working through each section in order
