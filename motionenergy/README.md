@@ -53,28 +53,28 @@ The course is divided into four modules, each corresponding to one week of the 3
 ### Installation
 
 1. Clone this repository:
-   ```
-   git clone https://github.com/yourusername/motionenergy.git
+   ```bash
+   git clone https://github.com/arjunpur/motionenergy.git
    cd motionenergy
    ```
 
-2. Create and activate a conda environment:
-   ```
-   conda env create -f environment.yml
-   conda activate motionenergy
+2. Create and activate a virtual environment using uv:
+   ```bash
+   uv venv
+   source .venv/bin/activate  # On Windows use `.venv\\Scripts\\activate`
    ```
 
-3. Alternatively, install dependencies using pip:
-   ```
-   pip install -r requirements.txt
+3. Install dependencies using uv:
+   ```bash
+   uv pip install -r requirements.txt
    ```
 
 4. Launch Jupyter Notebook:
-   ```
+   ```bash
    jupyter notebook
    ```
 
-## 📝 Course Materials
+## �� Course Materials
 
 Each module contains:
 
