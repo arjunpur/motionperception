@@ -121,6 +121,7 @@ dependencies = [
     "scikit-image==0.25.2",
     "scikit-learn==1.6.1",
     "scipy==1.15.0",
+    "scipy-stubs>=1.15.2.2",
     "screeninfo==0.8.1",
     "seaborn==0.13.2",
     "send2trash==1.8.3",
