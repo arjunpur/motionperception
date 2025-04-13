@@ -1,7 +1,10 @@
 [project]
 name = "motionperception"
 version = "0.1.0"
-description = "Add your description here"
+description = "Simulation of motion perception using RDKs, motion energy filters, and switching/accumulator observer models."
+authors = [
+  { name="Arjun Puri", email="arjunpur2@gmail.com" },
+]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -28,7 +28,7 @@ The aim is to see **how closely** these models replicate the observed behavioral
 
 ## 2. Motivation
 
-- **Empirical Context**: Laquitaine & Gardner (2018) showed that when humans judge motion directions that deviate from their prior expectations, they often yield **two clusters** of estimates: one near the prior and one near the true motion. This runs counter to a straightforward Bayesian view, which would predict a single “compromise” peak.
+- **Empirical Context**: Laquitaine & Gardner (2018) showed that when humans judge motion directions that deviate from their prior expectations, they often yield **two clusters** of estimates: one near the prior and one near the true motion. This runs counter to a straightforward Bayesian view, which would predict a single "compromise" peak.
 - **Why This Project?**
     - **Mechanistic Insight**: We explore a more **neural-like** approach by simulating early visual processing with motion energy filters, then feeding that into decision models.
     - **Comparative Analysis**: We compare the **Switching Observer** (discrete selection of prior vs. evidence) with a **multi-accumulator** or **drift diffusion** style integration approach.
@@ -45,9 +45,9 @@ The aim is to see **how closely** these models replicate the observed behavioral
 3. **Investigate Prior vs. Sensory Reliability**
     - Manipulate the **strength of the prior** (broad vs. narrow) and **stimulus coherence** (low vs. high). See how these factors influence the probability of switching or the speed of accumulation in each model.
 4. **Assess Model Performance**
-    - Evaluate *accuracy*, *distribution of estimates*, *bimodality*, and potentially *reaction times* (if implementing time-based accumulation). Compare these metrics to highlight differences between a “switching” strategy and a “continuous accumulation” strategy.
+    - Evaluate *accuracy*, *distribution of estimates*, *bimodality*, and potentially *reaction times* (if implementing time-based accumulation). Compare these metrics to highlight differences between a "switching" strategy and a "continuous accumulation" strategy.
 
-Ultimately, we aim to understand **how a seemingly “heuristic” switching observer** might approximate or diverge from **Bayesian optimal** performance—and how that might be supported by neural-level motion processing.
+Ultimately, we aim to understand **how a seemingly "heuristic" switching observer** might approximate or diverge from **Bayesian optimal** performance—and how that might be supported by neural-level motion processing.
 
 ---
 
@@ -86,7 +86,7 @@ Ultimately, we aim to understand **how a seemingly “heuristic” switching obs
 ## 5. Methods Outline
 
 ### 5.1 Random Dot Kinematogram (RDK)
-- Generate multi-direction stimuli: on each trial, the “true” motion direction is sampled from a distribution (e.g. uniform among {0°, 90°, 180°, 270°}, or a continuous distribution).
+- Generate multi-direction stimuli: on each trial, the "true" motion direction is sampled from a distribution (e.g. uniform among {0°, 90°, 180°, 270°}, or a continuous distribution).
 - Vary **coherence**: a fraction of dots move in the true direction, the rest move randomly.
 - Implement standard RDK logic: each frame updates dots, wraps around edges, etc.
 
@@ -146,20 +146,20 @@ TODO: Update this with `uv` commands
 ## 7. Expected Results
 
 - **Switching Observer**:
-    - Should yield **bimodal** distributions of reported directions when the true motion direction diverges from the prior’s mean *and* the sensory evidence is low/moderate reliability.
+    - Should yield **bimodal** distributions of reported directions when the true motion direction diverges from the prior's mean *and* the sensory evidence is low/moderate reliability.
     - As coherence increases, it should rely more consistently on the true motion direction.
 - **Multi-Accumulator**:
     - With a prior bias, you may see a shift in the probability of choosing certain directions.
-    - You typically get a single “winning accumulator” but can see how often the prior-favored accumulator wins under low vs. high coherence.
+    - You typically get a single "winning accumulator" but can see how often the prior-favored accumulator wins under low vs. high coherence.
 - **Comparison**:
-    - Does the multi-accumulator also produce discrete “switches” or a more graded pattern of decisions?
+    - Does the multi-accumulator also produce discrete "switches" or a more graded pattern of decisions?
     - Are there conditions where the two models behave similarly in average accuracy but differ in the shape of the distribution of chosen directions?
 
 ---
 
 ## 8. Future Extensions
 
-1. **Continuous Angles**: Move beyond discrete directions, implementing a continuous race or “map” of accumulators.
+1. **Continuous Angles**: Move beyond discrete directions, implementing a continuous race or "map" of accumulators.
 2. **Parameter Fitting**: Fit the models to actual human data (if available) to see which better explains the distribution of estimates.
 3. **Neural Implementation**: Replace the single-likelihood readout with a more biologically detailed neural network model or hierarchical Bayesian approach.
 4. **Reaction Time Analysis**: Compare predicted RT distributions from the multi-accumulator approach to behavioral RT data.
