@@ -1,4 +1,4 @@
-# Switching Observer for Multi-Directional Motion Perception
+# Motion Energy + Switching Observer for Multi-Directional Motion Perception
 
 **Maintainer**: Arjun Puri  
 **Last Updated**: 04/13/2025
@@ -52,8 +52,6 @@ Ultimately, we aim to understand **how a seemingly “heuristic” switching obs
 ---
 
 ## 4. Repository Structure
-
-A recommended directory layout:
 
 ```
 .
