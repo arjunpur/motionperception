@@ -3,10 +3,9 @@
 **Maintainer**: Arjun Puri  
 **Last Updated**: 04/16/2025
 
-## Project Context
+## Context
 
-Visual motion processing involves multiple stages in the primate brain. Neurons in primary visual cortex (V1) are selective for oriented edges and their motion direction, forming the basic units of motion processing ( [Direction selectivity in V1 of alert monkeys: evidence for parallel pathways for motion processing - PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC2375481/#:~:text=The%20direction%20selective%20cells%20in,22%3B%20%2023%20Gur) ). However, because of the **aperture problem** (an oriented receptor can only sense motion component perpendicular to its orientation), a single V1 neuron's local view is often ambiguous ([npgrj_nn_1786 1421..1431](http://courses.washington.edu/psy448/pdf/Rust-nn06.pdf#:~:text=motion%20of%20oriented%20elements%20in,a%20population%20of%20directionally%20selective)). The middle temporal area (MT, also called V5) integrates V1 inputs to infer the true global motion of objects ([npgrj_nn_1786 1421..1431](http://courses.washington.edu/psy448/pdf/Rust-nn06.pdf#:~:text=however%2C%20reveal%20the%20motion%20of,V5%292%2C9%2C10)). Indeed, area MT plays a crucial role in visual motion perception ( [Normalization of neuronal responses in cortical area MT across signal strengths and motion directions - PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC4137245/#:~:text=It%20has%20been%20well%20established,26%20Snowden%20et%20al) ), containing neurons that solve the aperture problem by combining signals from many V1 cells ([npgrj_nn_1786 1421..1431](http://courses.washington.edu/psy448/pdf/Rust-nn06.pdf#:~:text=however%2C%20reveal%20the%20motion%20of,V5%292%2C9%2C10)). Some MT neurons are **pattern-selective**, responding to the overall motion of a complex pattern (like a plaid) rather than just its components, whereas others remain **component-selective** like V1 ([npgrj_nn_1786 1421..1431](http://courses.washington.edu/psy448/pdf/Rust-nn06.pdf#:~:text=Modeling%20the%20computation%20performed%20by,A)). Furthermore, experiments with stochastic motion (random dot stimuli) have shown that MT population activity correlates with perception – MT neurons likely provide the signals on which motion discrimination decisions are based ([[PDF] A relationship between behavioral choice and the visual responses ...](https://www.cns.nyu.edu/csh/csh04/Articles/Britten-etal-96.pdf#:~:text=,and%20are%20in%20good)). This project will recreate these concepts in a computational model, investigating how neural population models for V1 and MT encode motion perception.
-
+Visual motion processing involves multiple stages in the primate brain. Neurons in primary visual cortex (V1) are selective for oriented edges and their motion direction, forming the basic units of motion processing [1]. However, because of the **aperture problem** (an oriented receptor can only sense motion component perpendicular to its orientation), a single V1 neuron's local view is often ambiguous [2]. The middle temporal area (MT, also called V5) integrates V1 inputs to infer the true global motion of objects [2]. Indeed, area MT plays a crucial role in visual motion perception [3], containing neurons that solve the aperture problem by combining signals from many V1 cells [2]. Some MT neurons are **pattern-selective**, responding to the overall motion of a complex pattern (like a plaid) rather than just its components, whereas others remain **component-selective** like V1 [2]. Furthermore, experiments with stochastic motion (random dot stimuli) have shown that MT population activity correlates with perception – MT neurons likely provide the signals on which motion discrimination decisions are based [4]. This project will recreate these concepts in a computational model, investigating how neural population models for V1 and MT encode motion perception.
 
 ## Key Question
 
@@ -23,7 +22,6 @@ How do population codes in V1 and MT transform local motion signals into a robus
 - Build an MT Model: Pool/Integrate V1 outputs to produce pattern-selective or component-selective MT neurons with broader tuning.
 - Decode & Analyze: Apply population decoding (vector averaging, max-likelihood, etc.) to quantify how well local signals or integrated signals recover true stimulus motion.
 - Compare & Validate: Examine how the model performs across stimulus types, coherence levels, and parameter manipulations. Plot tuning curves, psychometric-like curves, and compare to known experimental data.
-
 
 ## Repository Structure
 
@@ -97,3 +95,13 @@ How do population codes in V1 and MT transform local motion signals into a robus
 - [ ] Decision Layer (e.g., an LIP-like Module): Implement a drift-diffusion or attractor network model that accumulates the MT response over time until a threshold is reached, replicating reaction-time and choice dynamics.
 - [ ] Spiking vs. Rate: Compare a rate-based version of your model to a spiking version to see differences in temporal coding or variability.
 - [ ] Spatial Patterns: Look at more complex stimuli (e.g., multiple motion directions in different parts of the visual field). Study how MT might segment or integrate motions.
+
+## References
+
+[1] Gur, M., & Snodderly, D. M. (2007). Direction selectivity in V1 of alert monkeys: evidence for parallel pathways for motion processing. Journal of Physiology, 585(2), 383-400.
+
+[2] Rust, N. C., Mante, V., Simoncelli, E. P., & Movshon, J. A. (2006). How MT cells analyze the motion of visual patterns. Nature Neuroscience, 9(11), 1421-1431.
+
+[3] Heeger, D. J., Simoncelli, E. P., & Movshon, J. A. (1996). Computational models of cortical visual processing. Proceedings of the National Academy of Sciences, 93(2), 623-627.
+
+[4] Britten, K. H., Newsome, W. T., Shadlen, M. N., Celebrini, S., & Movshon, J. A. (1996). A relationship between behavioral choice and the visual responses of neurons in macaque MT. Visual Neuroscience, 13(1), 87-100.
