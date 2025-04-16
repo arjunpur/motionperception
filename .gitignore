@@ -2,3 +2,6 @@
 .ipynb_checkpoints/
 **/CLAUDE.local.md
 __pycache__/
+.cursor/
+.ruff_cache/
+.venv/

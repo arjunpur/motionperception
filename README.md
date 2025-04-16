@@ -1,181 +1,99 @@
-# Motion Energy + Switching Observer for Multi-Directional Motion Perception
+# Modeling Motion Perception in V1 and MT
 
 **Maintainer**: Arjun Puri  
-**Last Updated**: 04/13/2025
+**Last Updated**: 04/16/2025
 
----
+## Project Context
 
-**In a nutshell**, this README:
+Visual motion processing involves multiple stages in the primate brain. Neurons in primary visual cortex (V1) are selective for oriented edges and their motion direction, forming the basic units of motion processing ( [Direction selectivity in V1 of alert monkeys: evidence for parallel pathways for motion processing - PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC2375481/#:~:text=The%20direction%20selective%20cells%20in,22%3B%20%2023%20Gur) ). However, because of the **aperture problem** (an oriented receptor can only sense motion component perpendicular to its orientation), a single V1 neuron's local view is often ambiguous ([npgrj_nn_1786 1421..1431](http://courses.washington.edu/psy448/pdf/Rust-nn06.pdf#:~:text=motion%20of%20oriented%20elements%20in,a%20population%20of%20directionally%20selective)). The middle temporal area (MT, also called V5) integrates V1 inputs to infer the true global motion of objects ([npgrj_nn_1786 1421..1431](http://courses.washington.edu/psy448/pdf/Rust-nn06.pdf#:~:text=however%2C%20reveal%20the%20motion%20of,V5%292%2C9%2C10)). Indeed, area MT plays a crucial role in visual motion perception ( [Normalization of neuronal responses in cortical area MT across signal strengths and motion directions - PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC4137245/#:~:text=It%20has%20been%20well%20established,26%20Snowden%20et%20al) ), containing neurons that solve the aperture problem by combining signals from many V1 cells ([npgrj_nn_1786 1421..1431](http://courses.washington.edu/psy448/pdf/Rust-nn06.pdf#:~:text=however%2C%20reveal%20the%20motion%20of,V5%292%2C9%2C10)). Some MT neurons are **pattern-selective**, responding to the overall motion of a complex pattern (like a plaid) rather than just its components, whereas others remain **component-selective** like V1 ([npgrj_nn_1786 1421..1431](http://courses.washington.edu/psy448/pdf/Rust-nn06.pdf#:~:text=Modeling%20the%20computation%20performed%20by,A)). Furthermore, experiments with stochastic motion (random dot stimuli) have shown that MT population activity correlates with perception – MT neurons likely provide the signals on which motion discrimination decisions are based ([[PDF] A relationship between behavioral choice and the visual responses ...](https://www.cns.nyu.edu/csh/csh04/Articles/Britten-etal-96.pdf#:~:text=,and%20are%20in%20good)). This project will recreate these concepts in a computational model, investigating how neural population models for V1 and MT encode motion perception.
 
-- Explains **why** the project matters in the context of perceptual decision-making.
-- Describes **what** each component of the simulation does (RDK stimuli, motion energy, models).
-- Provides **clear instructions** for how to set up, run, and analyze results.
-- Outlines the **broader significance** (comparing switching vs. accumulator approaches for multi-direction tasks).
 
-## 1. Overview
+## Key Question
 
-This repository implements simulations and computational models of human motion perception using **random dot kinematograms (RDKs)**. Specifically, it examines a recent challenge to the classical Bayesian integration framework: **instead of continuously combining sensory likelihood with a prior, humans may \_switch\_ on each trial**—sometimes trusting the prior, sometimes trusting the sensory evidence. This phenomenon can lead to **bimodal** distributions of perceptual estimates, which pure Bayesian accounts do not naturally predict.
+How do population codes in V1 and MT transform local motion signals into a robust, global direction estimate? How does this vary across different stimulus types (drifting grating, plaid grating, RDK)?
 
-We combine:
+## Why It Matters
+- Local vs. Global Motion: Individual V1 neurons have small receptive fields and can only sense motion orthogonal to their preferred orientation, creating ambiguity (the "aperture problem").
+- MT Integration: MT neurons pool signals over larger receptive fields, resolving ambiguities in motion direction and improving robustness in noisy conditions.
+- Population Coding & Perception: Understanding the computational principles behind this transformation bridges our knowledge of neural representations and real-world perception, showing how seemingly simple local detectors can collectively give rise to sophisticated motion perception.
 
-1. A **Motion Energy** model of low-level visual processing.
-2. A **Switching Observer** model that selects between prior- or sensory-driven estimates.
-3. A **Decision-making Model** (e.g. a multi-accumulator or race model, a generalized drift-diffusion, etc.) for comparison.
+## Project Goals
+- Implement Motion Stimuli: Drifting gratings, plaid gratings, and RDK, each with parameterized control over direction, coherence, etc.
+- Build a V1 Model: A population of direction-tuned units to represent local motion signals, including noise modeling (Poisson or Gaussian).
+- Build an MT Model: Pool/Integrate V1 outputs to produce pattern-selective or component-selective MT neurons with broader tuning.
+- Decode & Analyze: Apply population decoding (vector averaging, max-likelihood, etc.) to quantify how well local signals or integrated signals recover true stimulus motion.
+- Compare & Validate: Examine how the model performs across stimulus types, coherence levels, and parameter manipulations. Plot tuning curves, psychometric-like curves, and compare to known experimental data.
 
-The aim is to see **how closely** these models replicate the observed behavioral patterns—such as **bimodal direction estimates**—and to examine the interplay between **prior knowledge** and **sensory evidence** in multi-direction motion perception tasks.
 
----
-
-## 2. Motivation
-
-- **Empirical Context**: Laquitaine & Gardner (2018) showed that when humans judge motion directions that deviate from their prior expectations, they often yield **two clusters** of estimates: one near the prior and one near the true motion. This runs counter to a straightforward Bayesian view, which would predict a single "compromise" peak.
-- **Why This Project?**
-    - **Mechanistic Insight**: We explore a more **neural-like** approach by simulating early visual processing with motion energy filters, then feeding that into decision models.
-    - **Comparative Analysis**: We compare the **Switching Observer** (discrete selection of prior vs. evidence) with a **multi-accumulator** or **drift diffusion** style integration approach.
-    - **Multi-Directional Extension**: Standard drift-diffusion is often binary (left vs. right). Here, we implement or approximate a *race model* (multiple accumulators, one per direction) so we can handle more than two possible directions (e.g. four or eight directions). This captures more realistic scenarios where motion could be in any of several angles.
-
----
-
-## 3. Project Goals and Questions
-
-1. **Replicate Bimodal Estimates**
-    - Show that a **switching observer** operating on motion energy signals can produce **bimodal** clusters (one near prior mean, one near the true stimulus).
-2. **Compare Decision Models**
-    - Implement an **accumulation-based** or **race** model for multi-direction choices. Determine if it exhibits similar or different distributions of final estimates and how it incorporates prior bias.
-3. **Investigate Prior vs. Sensory Reliability**
-    - Manipulate the **strength of the prior** (broad vs. narrow) and **stimulus coherence** (low vs. high). See how these factors influence the probability of switching or the speed of accumulation in each model.
-4. **Assess Model Performance**
-    - Evaluate *accuracy*, *distribution of estimates*, *bimodality*, and potentially *reaction times* (if implementing time-based accumulation). Compare these metrics to highlight differences between a "switching" strategy and a "continuous accumulation" strategy.
-
-Ultimately, we aim to understand **how a seemingly "heuristic" switching observer** might approximate or diverge from **Bayesian optimal** performance—and how that might be supported by neural-level motion processing.
-
----
-
-## 4. Repository Structure
+## Repository Structure
 
 ```
 .
-├── README.md                <-- You are here (project overview)
-├── src/
-│   ├── stimuli.py           <-- RDK generation code (multi-direction)
-│   ├── filters.py           <-- Motion energy or spatiotemporal filter utilities
-│   ├── observer_switching.py <-- Switching observer model
-│   ├── observer_accumulator.py <-- Multi-accumulator / Race / DDM-based model
-│   ├── analysis.py          <-- Common analysis functions, e.g. for computing errors, distributions
-│   └── utils.py             <-- Utility functions (e.g. circular stats, param management)
+├── stimuli/
+│   ├── generate_gratings.py
+│   ├── generate_plaids.py
+│   └── generate_rdk.py
+├── models/
+│   ├── v1_model.py
+│   ├── mt_model.py
+│   └── pooling_schemes.py
+├── analysis/
+│   ├── decoding.py
+│   ├── psychometric_analysis.py
+│   └── visualization.py
 ├── notebooks/
-│   ├── 01_stimulus_demo.ipynb <-- Interactive RDK generation and visualization
-│   ├── 02_motion_energy.ipynb <-- Exploring filter responses and direction tuning
-│   ├── 03_switching_model.ipynb <-- Running the switching observer across conditions
-│   ├── 04_accumulator_model.ipynb <-- Running the race / multi-accumulator model
-│   └── 05_analysis_plots.ipynb   <-- Producing final figures, comparing model results
-├── experiments/
-│   ├── config.yaml             <-- Example parameters for batch runs (coherence levels, prior widths, etc.)
-│   ├── run_experiment.py       <-- Command-line script to run a series of trials for each model
-│   └── ...
-├── results/
-│   ├── data/                   <-- Saved simulation data (.csv, .npy, etc.)
-│   └── figures/                <-- Final plots/images
-├── docs/ 
-│   └── project_report.md       <-- Research writeup
-├── pyproject.toml
+│   ├── 01_Stimulus_Demos.ipynb
+│   ├── 02_V1_Population.ipynb
+│   ├── 03_MT_Integration.ipynb
+│   ├── 04_Decoding_Analysis.ipynb
+│   └── 05_Final_Results_and_Figures.ipynb
+├── README.md          # (this file)
 ```
 
----
+## Project Milestones & Checklist
 
-## 5. Methods Outline
+### 1. Foundational Research & Setup
+- [ ] Review Literature: Read core papers on V1 & MT motion processing, and population coding principles.
+- [ ] Project Outline: Finalize approach (rate-based vs spiking, which decoding methods to use, etc.).
+- [ ] Environment Setup: Install Python libraries, create GitHub repo, confirm everything runs.
 
-### 5.1 Random Dot Kinematogram (RDK)
-- Generate multi-direction stimuli: on each trial, the "true" motion direction is sampled from a distribution (e.g. uniform among {0°, 90°, 180°, 270°}, or a continuous distribution).
-- Vary **coherence**: a fraction of dots move in the true direction, the rest move randomly.
-- Implement standard RDK logic: each frame updates dots, wraps around edges, etc.
+### 2. Stimulus Construction
+- [ ] Drifting Gratings: Implement code to generate drifting sinusoidal gratings.
+- [ ] Plaid Gratings: Implement superposition of two drifting gratings to form plaid stimuli.
+- [ ] Random Dot Kinematogram (RDK): Implement coherent vs noise dot motion, adjustable coherence and speed.
+- [ ] Visualization: Plot or animate example stimuli to verify correctness.
 
-### 5.2 Motion Energy Filtering
-- Use **spatiotemporal Gabor filters** or a simplified correlation-based approach to estimate motion direction from raw frames.
-- Return either a **time series** of directional energy (for each frame) or an **aggregate direction tuning** (e.g. filter responses across multiple angle channels).
+### 3. V1 Model Layer
+- [ ] Single Neuron Tuning: Implement direction-tuned response function (e.g., Gaussian or cosine).
+- [ ] Population: Scale up to a population covering all directions; add noise modeling (Poisson/Gaussian).
+- [ ] Validate: Plot population responses to drifting grating, plaid, and RDK to see direction peaks.
 
-### 5.3 Decision Models
+### 4. MT Model Layer
+- [ ] Pooling Mechanism: Integrate multiple V1 neurons' outputs to form MT neurons with broader tuning.
+- [ ] Pattern vs Component: Show that some MT neurons can resolve plaid ambiguity, while others remain component-like.
+- [ ] Noise & Normalization (Optional): Explore advanced features like divisive normalization.
 
-#### 5.3.1 Switching Observer
-- **Prior**: define a distribution or just a set of expectations over possible directions (e.g. more likely 0° vs. uniform).
-- **Sensory**: from the motion energy output, pick the most likely direction(s) or get a measure of reliability.
-- **Switch**: on each trial, either adopt the prior-based guess or the sensory-based guess, according to a reliability threshold (probabilistic or deterministic).
-- **Output**: final reported direction (leading to discrete categories or a continuous angle, depending on setup).
+### 5. Population Decoding
+- [ ] Implement Decoders: Vector average, winner-take-all, and (optionally) Bayesian or ML decoders.
+- [ ] Compare V1 vs MT: Show how decoding from MT can better recover true motion (especially for plaids or low-coherence RDK).
+- [ ] Performance Metrics: Plot psychometric-like curves for coherence levels; measure error or % correct.
 
-#### 5.3.2 Multi-Accumulator (or Race) Model
-- **Parallel accumulators**: each direction has an accumulator that integrates the (noisy) evidence favoring that direction over time.
-- **Initial bias**: incorporate prior knowledge by starting accumulators at different levels or modulating drift rates.
-- **Decision**: whichever accumulator hits the threshold first is the chosen direction. (Alternatively, after a fixed time, pick the accumulator with the highest value.)
-- **Output**: chosen direction, and optionally reaction time.
+### 6. Analysis & Validation
+- [ ] Tuning Curves: Characterize direction tuning widths in V1 vs MT.
+- [ ] Noise Characteristics: Evaluate trial-to-trial variability, Fano factor, or correlations (if implemented).
+- [ ] Parameter Sensitivity: Check how changing number of neurons, noise amplitude, pooling weights affect performance.
 
-### 5.4 Analysis
-- **Accuracy**: compare chosen direction to ground truth.
-- **Distribution of Estimates**: check for **bimodality** or multi-peaked outcomes.
-- **Effect of Coherence**: plot how performance changes from low to high coherence.
-- **Effect of Prior**: see how a strong prior biases the decisions or leads to more switching.
-- **Reaction Times** (if using time-based accumulators): distribution or mean RT as a function of coherence.
+### 7. Final Results & Write-Up
+- [ ] Figures & Plots: Generate key plots (population activity, tuning curves, decoding performance).
+- [ ] Research-Style Report: Draft a blog post / README section with Introduction, Methods, Results, Discussion.
+- [ ] GitHub Polishing: Clean code notebooks, add explanatory comments, ensure reproducibility.
 
----
-
-## 6. Installation and Usage
-
-1. **Install dependencies** (e.g., into a virtual environment):
-
-TODO: Update this with `uv` commands
-
-2. **Run a demo notebook** (for RDK stimulus generation):
-   ```bash
-   jupyter notebook notebooks/01_stimulus_demo.ipynb
-   ```
-   This will demonstrate how the random dot stimuli look and let you tweak parameters.
-
-3. **Experiment Script**:
-    - Edit `experiments/config.yaml` to set the range of coherence levels, directions, prior distributions, etc.
-    - Run:
-      ```bash
-      python experiments/run_experiment.py
-      ```
-    - Results (model outputs, logs, etc.) will be saved in the `results/data/` directory.
-
-4. **Analysis and Figures**:
-    - Open `notebooks/05_analysis_plots.ipynb` to load simulation data, generate histograms, psychometric curves, etc.
-    - Final plots will be saved to `results/figures/`.
-
----
-
-## 7. Expected Results
-
-- **Switching Observer**:
-    - Should yield **bimodal** distributions of reported directions when the true motion direction diverges from the prior's mean *and* the sensory evidence is low/moderate reliability.
-    - As coherence increases, it should rely more consistently on the true motion direction.
-- **Multi-Accumulator**:
-    - With a prior bias, you may see a shift in the probability of choosing certain directions.
-    - You typically get a single "winning accumulator" but can see how often the prior-favored accumulator wins under low vs. high coherence.
-- **Comparison**:
-    - Does the multi-accumulator also produce discrete "switches" or a more graded pattern of decisions?
-    - Are there conditions where the two models behave similarly in average accuracy but differ in the shape of the distribution of chosen directions?
-
----
-
-## 8. Future Extensions
-
-1. **Continuous Angles**: Move beyond discrete directions, implementing a continuous race or "map" of accumulators.
-2. **Parameter Fitting**: Fit the models to actual human data (if available) to see which better explains the distribution of estimates.
-3. **Neural Implementation**: Replace the single-likelihood readout with a more biologically detailed neural network model or hierarchical Bayesian approach.
-4. **Reaction Time Analysis**: Compare predicted RT distributions from the multi-accumulator approach to behavioral RT data.
-
----
-
-## 9. References
-
-- **Laquitaine & Gardner (2018)**: *A Switching Observer for Human Perceptual Estimation.* Neuron, 97(2), 462–474.
-- **Adelson & Bergen (1985)**: *Spatiotemporal energy models for the perception of motion.* JOSA A, 2(2), 284–299.
-- **Gold & Shadlen (2007)**: *The neural basis of decision making.* Annual Review of Neuroscience, 30, 535–574. (Covers drift diffusion in perceptual tasks)
-- **Churchland et al. (2008)**: *Decision-making with multiple alternatives.* Nature Neuroscience, 11, 693–702. (Discusses multi-accumulator or race models)
-- More references in `docs/project_report.md`.
-
----
-
-### Contact
-
-For questions or feedback, please reach out at arjunpur2@gmail.com
+### 8. Optional Extensions
+- [ ] Spiking Models: Investigate using Brian2 or NEST for a spiking version of the same architecture.
+- [ ] Correlated Noise: Add correlated variability in V1 or MT to see how it impacts decoding.
+- [ ] Larger Scenes / Depth / Speed: Model additional aspects of motion selectivity in MT.
+- [ ] Recurrent / Feedback Connections: Investigate if adding recurrent connectivity within MT (or feedback from MT to V1) enhances or stabilizes direction discrimination.
+- [ ] Attention or Top-Down Modulation: Add a simple gating or gain control that represents "attention to motion" and see how it affects performance.
+- [ ] Decision Layer (e.g., an LIP-like Module): Implement a drift-diffusion or attractor network model that accumulates the MT response over time until a threshold is reached, replicating reaction-time and choice dynamics.
+- [ ] Spiking vs. Rate: Compare a rate-based version of your model to a spiking version to see differences in temporal coding or variability.
+- [ ] Spatial Patterns: Look at more complex stimuli (e.g., multiple motion directions in different parts of the visual field). Study how MT might segment or integrate motions.
