@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 
-def new_filter_bank(frequencies: list[float], thetas: NDArray[np.floating], px_pitch: float) -> tuple[NDArray, NDArray]:
+def new_filter_bank(frequencies: list[float], thetas: list[float], px_pitch: float) -> tuple[list[list[NDArray[np.floating]]], list[list[tuple[float, float]]]]:
     """
     Returns a numpy array of dimension 2 x F, where F is the cartesian product of |frequencies x thetas|
     This function constructs a spatio-temporal Gabor filter for each spatial frequency, orientation,
@@ -17,7 +17,6 @@ def new_filter_bank(frequencies: list[float], thetas: NDArray[np.floating], px_p
     for (i, phase) in enumerate(phases):
         for (j, f) in enumerate(frequencies):
             for (k, theta) in enumerate(thetas):
-                # TODO: Normalize the quadrature pair so that their combined energy is 1
                 filter = new_spatial_filter(theta, phase, f, px_pitch)
                 kernels[i].append(filter)
                 channels[i].append((f, theta))
@@ -89,7 +88,10 @@ def plot_spatial_gabors(gabors: list[NDArray], dpi: float, title: str):
 
     print(f"--> plotting {num_rows} rows with {num_per_row} plots per row")
 
-    fig, axs = plt.subplots(num_rows, num_per_row, squeeze=True, figsize=(100, 100), dpi=dpi)
+    max_height = max([g.shape[0] for g in gabors])
+    max_width = max([g.shape[1] for g in gabors])
+
+    fig, axs = plt.subplots(num_rows, num_per_row, squeeze=False, figsize=(max_width/dpi, max_height/dpi), dpi=dpi)
     plt.tight_layout(pad=0.0, h_pad=0.0, w_pad=0.0)
     # plt.suptitle(title)
     plt.xlabel("X")

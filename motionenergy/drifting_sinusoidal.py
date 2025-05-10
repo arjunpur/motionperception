@@ -2,6 +2,7 @@ import numpy as np
 from numpy.typing import NDArray
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from time import perf_counter
 
 
 # TODO: This function will crash the Jupyter kernel with large inputs - we need to optimize the memory
@@ -14,9 +15,14 @@ def new_stimulus(
         amplitude: float,
         time: float,  # sec
         fps: float,  # frames per second
-        px_pitch: float  # deg / pixel
+        px_pitch: float,  # deg / pixel
+        log_clock_time: bool = False
 ) -> NDArray[np.floating]:
     theta_rad = np.deg2rad(theta_deg)
+    start = 0.0
+    if log_clock_time:
+        start = perf_counter()
+
     # total number of frames
     frames = int(np.ceil(time * fps))
 
@@ -55,6 +61,9 @@ def new_stimulus(
         frames,
         phase,
     )
+    if log_clock_time:
+        end = perf_counter()
+        print(f"new_stimulus took {end-start:.6f}s | spatial_frequency={spatial_frequency}, fps={fps}, px_pitch={px_pitch}")
     return sinusoidal
 
 
@@ -63,7 +72,7 @@ def animate_stimulus(drifting_sinusodial: NDArray[np.floating], frames: int, fps
     # TODO: There's some detail that I think I'm missing around how to use frames and frequency
     # correctly
     fig, ax = plt.subplots(figsize=(width_px / dpi, height_px / dpi), dpi=dpi)
-    im = ax.imshow(drifting_sinusodial[40], cmap='gray', origin='lower')
+    im = ax.imshow(drifting_sinusodial[0], cmap='gray', origin='lower')
     fig.colorbar(im)
     plt.title(title)
     plt.xlabel('X')
@@ -89,8 +98,8 @@ def animate_stimulus(drifting_sinusodial: NDArray[np.floating], frames: int, fps
 
 
 def sinusoidal_3d(
-        x: NDArray[np.integer],
-        y: NDArray[np.integer],
+        x: NDArray,
+        y: NDArray,
         theta: float,  # radians
         A: float,
         f_s: float,  # cycle / px
