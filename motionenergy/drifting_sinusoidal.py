@@ -69,8 +69,6 @@ def new_stimulus(
 
 def animate_stimulus(drifting_sinusodial: NDArray[np.floating], frames: int, fps: float, width_px: int, height_px: int,
                      dpi: int, title: str):
-    # TODO: There's some detail that I think I'm missing around how to use frames and frequency
-    # correctly
     fig, ax = plt.subplots(figsize=(width_px / dpi, height_px / dpi), dpi=dpi)
     im = ax.imshow(drifting_sinusodial[0], cmap='gray', origin='lower')
     fig.colorbar(im)

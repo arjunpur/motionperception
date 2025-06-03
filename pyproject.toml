@@ -156,3 +156,8 @@ dependencies = [
     "websocket-client==1.8.0",
     "widgetsnbextension==4.0.13",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
